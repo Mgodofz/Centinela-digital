@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}Reporte #{{ reporte.id }} - Centinela Digital{% endblock %}
+{% block nav_mis %}activo{% endblock %}
+{% block content %}
+<div class="container fade-in">
+  <div class="page-header">
+    <a href="/mis-reportes" style="font-size:13px;color:var(--texto-mut);text-decoration:none">← Volver a mis reportes</a>
+    <h2 style="margin-top:8px">Reporte #{{ reporte.id }}</h2>
+    <p>{{ reporte.fecha.strftime('%d de %B de %Y, %H:%M') if reporte.fecha else '' }}</p>
+  </div>
+  <div class="grid-2">
+    <div>
+      <div class="card" style="margin-bottom:20px">
+        <div class="card-header">
+          <h3>Descripción del incidente</h3>
+          <span class="badge {% if reporte.nivel_riesgo=='Crítica' %}rojo{% elif reporte.nivel_riesgo=='Alta' %}amarillo{% elif reporte.nivel_riesgo=='Media' %}azul{% else %}gris{% endif %}">
+            Riesgo: {{ reporte.nivel_riesgo or 'No evaluado' }}
+          </span>
+        </div>
+        <p style="font-size:14px;line-height:1.7;color:#374151;white-space:pre-line">{{ reporte.incidente }}</p>
+      </div>
+      <div class="card">
+        <div class="card-header"><h3>💬 Comunicaciones</h3></div>
+        {% if comunicaciones %}
+          {% for c in comunicaciones %}
+          <div style="padding:12px;border-radius:10px;background:{% if c.remitente=='ciudadano' %}#fdf2f2{% else %}#f9fafb{% endif %};margin-bottom:10px">
+            <div style="font-size:12px;font-weight:700;color:var(--rojo);margin-bottom:4px">{{ c.remitente|capitalize }}</div>
+            <div style="font-size:14px">{{ c.mensaje }}</div>
+          </div>
+          {% endfor %}
+        {% else %}
+          <p class="empty-state" style="padding:30px">No hay mensajes aún.</p>
+        {% endif %}
+        <form method="POST" action="/reporte/{{ reporte.id }}" style="margin-top:14px;display:flex;gap:8px">
+          <input type="text" name="mensaje" class="form-control" placeholder="Escribe un mensaje..." required>
+          <button class="btn btn-primary">Enviar</button>
+        </form>
+      </div>
+    </div>
+    <div>
+      <div class="card" style="margin-bottom:20px">
+        <div class="card-header"><h3>Estado del caso</h3></div>
+        <div class="timeline">
+          <div class="timeline-item completado"><h5>Reporte registrado</h5><span>{{ reporte.fecha.strftime('%d/%m/%Y %H:%M') if reporte.fecha else '—' }}</span></div>
+          <div class="timeline-item {% if reporte.nivel_riesgo %}completado{% endif %}"><h5>Evaluación de riesgo</h5><span>{{ reporte.nivel_riesgo or 'Pendiente' }}</span></div>
+          <div class="timeline-item {% if canalizado %}completado{% endif %}"><h5>Canalización</h5><span>{{ institucion or 'Sin asignar' }}</span></div>
+          <div class="timeline-item {% if reporte.estatus_caso == 'En proceso' or reporte.estatus_caso == 'Cerrado' %}completado{% endif %}"><h5>Atención en proceso</h5><span>{{ reporte.estatus_caso or 'En espera' }}</span></div>
+          <div class="timeline-item {% if reporte.estatus_caso == 'Cerrado' %}completado{% endif %}"><h5>Cierre del caso</h5><span>{{ 'Cerrado' if reporte.estatus_caso == 'Cerrado' else '—' }}</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><h3>📎 Evidencia adjunta</h3></div>
+        {% if evidencias %}
+          {% for e in evidencias %}
+          <div style="display:flex;align-items:center;gap:10px;padding:10px;border:1px solid var(--borde);border-radius:8px;margin-bottom:8px;font-size:13px">
+            📄 {{ e.tipo_evidencia }} <a href="{{ e.ruta_archivo }}" target="_blank" style="margin-left:auto;color:var(--rojo);font-weight:600">Ver</a>
+          </div>
+          {% endfor %}
+        {% else %}
+          <p class="empty-state" style="padding:30px">Sin evidencias cargadas.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

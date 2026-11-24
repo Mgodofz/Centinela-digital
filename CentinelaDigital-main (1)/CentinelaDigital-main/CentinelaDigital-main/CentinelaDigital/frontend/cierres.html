@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Cierres - Centinela Digital{% endblock %}
+{% block extra_css %}
+<style>
+.estrella{color:#f59e0b;font-size:16px;letter-spacing:1px}
+.estrella.vacia{color:#d1d5db}
+.cierre-card{background:#fff;border:1px solid var(--borde);border-radius:14px;padding:22px;margin-bottom:14px;border-left:4px solid #10b981;transition:.2s}
+.cierre-card:hover{box-shadow:var(--sombra-md)}
+.cierre-card h4{font-size:15px;margin-bottom:6px}
+.lecciones{font-size:13.5px;color:var(--texto-mut);line-height:1.6;margin-top:12px;padding:12px 14px;background:#f9fafb;border-radius:8px;font-style:italic;border-left:3px solid var(--borde)}
+</style>
+{% endblock %}
+{% block content %}
+<div class="container fade-in">
+  <div class="page-header">
+    <h2>Cierres y retroalimentación</h2>
+    <p>Historial de casos cerrados con calificación de satisfacción</p>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-icon verde">✅</div><div><div class="stat-valor">{{ cierres|length if cierres else 0 }}</div><div class="stat-label">Casos cerrados</div></div></div>
+    <div class="stat-card"><div class="stat-icon amarillo">⭐</div><div><div class="stat-valor">{{ promedio }}</div><div class="stat-label">Satisfacción promedio</div></div></div>
+    <div class="stat-card"><div class="stat-icon azul">🏆</div><div><div class="stat-valor">{{ cinco_estrellas }}</div><div class="stat-label">Con 5 estrellas</div></div></div>
+  </div>
+
+  {% if cierres %}
+    {% for c in cierres %}
+    <div class="cierre-card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <div>
+          <h4>Caso #{{ c.caso_id }} — Reporte #{{ c.reporte_id }}</h4>
+          <div style="font-size:12.5px;color:var(--texto-mut)">
+            📅 {{ c.fecha_cierre.strftime('%d/%m/%Y %H:%M') if c.fecha_cierre else '—' }}
+            · 👤 {{ c.responsable }}
+          </div>
+        </div>
+        <div style="text-align:right">
+          <div>
+            {% for i in range(1, 6) %}
+              <span class="estrella {% if i > c.calificacion_satisfaccion %}vacia{% endif %}">★</span>
+            {% endfor %}
+          </div>
+          <div style="font-size:12px;color:var(--texto-mut);margin-top:2px">{{ c.calificacion_satisfaccion }}/5</div>
+        </div>
+      </div>
+      {% if c.lecciones_aprendidas %}
+      <div class="lecciones">"{{ c.lecciones_aprendidas }}"</div>
+      {% endif %}
+      <div style="margin-top:14px">
+        <a href="/caso/{{ c.caso_id }}" class="btn btn-outline btn-sm">Ver caso completo →</a>
+      </div>
+    </div>
+    {% endfor %}
+  {% else %}
+  <div class="card">
+    <div class="empty-state">
+      <div class="icono">🏁</div>
+      <h4>Sin cierres registrados</h4>
+      <p>Los casos aparecerán aquí cuando se cierren desde su detalle.</p>
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

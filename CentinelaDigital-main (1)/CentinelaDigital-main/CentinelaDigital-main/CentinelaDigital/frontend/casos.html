@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Casos - Centinela Digital{% endblock %}
+{% block nav_panel %}{% endblock %}
+{% block extra_css %}
+<style>
+.caso-card{background:#fff;border:1px solid var(--borde);border-radius:14px;padding:20px;transition:.2s;text-decoration:none;color:inherit;display:block;border-left:4px solid var(--rojo)}
+.caso-card:hover{transform:translateY(-3px);box-shadow:var(--sombra-md)}
+.caso-card h4{font-size:15px;margin-bottom:8px;font-weight:700}
+.caso-meta{display:flex;justify-content:space-between;font-size:12px;color:var(--texto-mut);margin-top:12px;padding-top:12px;border-top:1px solid var(--borde)}
+</style>
+{% endblock %}
+{% block content %}
+<div class="container fade-in">
+  <div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:12px">
+    <div><h2>Gestión de casos</h2><p>Casos activos canalizados a instituciones responsables</p></div>
+    <a href="/nuevo-caso" class="btn btn-primary">➕ Nuevo caso</a>
+  </div>
+  {% if casos %}
+  <div class="grid-auto">
+    {% for c in casos %}
+    <a href="/caso/{{ c.id }}" class="caso-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <span class="badge gris">Caso #{{ c.id }}</span>
+        <span class="badge {% if c.estatus_caso=='Cerrado' %}verde{% elif c.estatus_caso=='Abierto' %}amarillo{% else %}azul{% endif %}">{{ c.estatus_caso }}</span>
+      </div>
+      <h4>Reporte vinculado #{{ c.reporte_id }}</h4>
+      <p style="font-size:13px;color:var(--texto-mut)">Responsable: <strong style="color:var(--texto)">{{ c.responsable }}</strong></p>
+      <div class="caso-meta"><span>📎 Ver detalles</span><span>→</span></div>
+    </a>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="card"><div class="empty-state"><div class="icono">🗂️</div><h4>Sin casos activos</h4><p>Los casos se crean al vincular un reporte con un responsable.</p><a href="/nuevo-caso" class="btn btn-primary" style="margin-top:16px">Crear el primer caso</a></div></div>
+  {% endif %}
+</div>
+{% endblock %}

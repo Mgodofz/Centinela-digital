@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Estadísticas - Centinela Digital{% endblock %}
+{% block nav_stats %}activo{% endblock %}
+{% block extra_css %}
+<style>
+.chart-bar{display:flex;align-items:flex-end;gap:14px;height:220px;padding:20px 10px;border-bottom:2px solid var(--borde)}
+.bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px}
+.bar{width:100%;max-width:60px;background:linear-gradient(180deg,#a50000,#8B0000);border-radius:8px 8px 0 0;transition:.4s;min-height:8px;position:relative}
+.bar:hover{filter:brightness(1.15)}
+.bar-label{font-size:12px;font-weight:600;color:var(--texto-mut)}
+.bar-valor{font-size:13px;font-weight:800;color:var(--rojo)}
+.progress-item{margin-bottom:16px}
+.progress-item .barra{height:10px;background:#f3f4f6;border-radius:20px;overflow:hidden;margin-top:6px}
+.progress-item .fill{height:100%;background:linear-gradient(90deg,#8B0000,#a50000);border-radius:20px;transition:.6s}
+</style>
+{% endblock %}
+{% block content %}
+<div class="container fade-in">
+  <div class="page-header">
+    <h2>Estadísticas del sistema</h2>
+    <p>Resumen visual de la actividad de Centinela Digital</p>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-icon rojo">📊</div><div><div class="stat-valor">{{ total_reportes|default(0) }}</div><div class="stat-label">Total reportes</div></div></div>
+    <div class="stat-card"><div class="stat-icon azul">👥</div><div><div class="stat-valor">{{ total_usuarios|default(0) }}</div><div class="stat-label">Usuarios</div></div></div>
+    <div class="stat-card"><div class="stat-icon verde">✅</div><div><div class="stat-valor">{{ cerrados|default(0) }}</div><div class="stat-label">Casos cerrados</div></div></div>
+    <div class="stat-card"><div class="stat-icon amarillo">🏛️</div><div><div class="stat-valor">{{ total_instituciones|default(0) }}</div><div class="stat-label">Instituciones</div></div></div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-header"><h3>Reportes por nivel de riesgo</h3></div>
+      <div class="chart-bar">
+        {% set max = (datos_riesgo|map(attribute='total')|max) if datos_riesgo else 1 %}
+        {% for d in datos_riesgo %}
+        <div class="bar-col">
+          <div class="bar-valor">{{ d.total }}</div>
+          <div class="bar" style="height:{{ (d.total / max * 160) if max else 8 }}px"></div>
+          <div class="bar-label">{{ d.nivel_riesgo }}</div>
+        </div>
+        {% endfor %}
+        {% if not datos_riesgo %}
+        <p class="empty-state" style="margin:auto">Sin datos aún.</p>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><h3>Estado de casos</h3></div>
+      <div style="padding:10px 0">
+        {% for e in datos_estados %}
+        <div class="progress-item">
+          <div style="display:flex;justify-content:space-between;font-size:13px">
+            <strong>{{ e.estatus_caso or 'Pendiente' }}</strong>
+            <span style="color:var(--texto-mut)">{{ e.total }}</span>
+          </div>
+          <div class="barra"><div class="fill" style="width:{{ (e.total / (total_casos or 1) * 100)|round }}%"></div></div>
+        </div>
+        {% endfor %}
+        {% if not datos_estados %}
+        <p class="empty-state">Sin casos registrados.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

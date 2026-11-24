@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Panel - Centinela Digital{% endblock %}
+{% block nav_panel %}activo{% endblock %}
+{% block content %}
+<div class="container fade-in">
+  <div class="page-header">
+    <h2>Panel administrativo</h2>
+    <p>Vista general de todos los reportes del sistema</p>
+  </div>
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-icon rojo">📊</div><div><div class="stat-valor">{{ total|default(0) }}</div><div class="stat-label">Reportes totales</div></div></div>
+    <div class="stat-card"><div class="stat-icon amarillo">⚠️</div><div><div class="stat-valor">{{ criticos|default(0) }}</div><div class="stat-label">Riesgo crítico</div></div></div>
+    <div class="stat-card"><div class="stat-icon azul">🔄</div><div><div class="stat-valor">{{ casos_abiertos|default(0) }}</div><div class="stat-label">Casos abiertos</div></div></div>
+    <div class="stat-card"><div class="stat-icon verde">✅</div><div><div class="stat-valor">{{ cerrados|default(0) }}</div><div class="stat-label">Cerrados</div></div></div>
+  </div>
+  <div class="card">
+    <div class="card-header">
+      <h3>Todos los reportes</h3>
+      <a href="/nuevo-reporte" class="btn btn-primary btn-sm">➕ Nuevo</a>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>ID</th><th>Incidente</th><th>Riesgo</th><th>Fecha</th><th>Estado</th><th>Acciones</th></tr></thead>
+        <tbody>
+          {% if reportes %}
+            {% for r in reportes %}
+            <tr>
+              <td><strong>#{{ r.id }}</strong></td>
+              <td>{{ r.incidente[:70] }}{% if r.incidente|length > 70 %}…{% endif %}</td>
+              <td>
+                {% if r.nivel_riesgo=='Crítica' %}<span class="badge rojo">Crítica</span>
+                {% elif r.nivel_riesgo=='Alta' %}<span class="badge amarillo">Alta</span>
+                {% elif r.nivel_riesgo=='Media' %}<span class="badge azul">Media</span>
+                {% else %}<span class="badge gris">Baja</span>{% endif %}
+              </td>
+              <td style="font-size:13px;color:var(--texto-mut)">{{ r.fecha.strftime('%d/%m/%Y') if r.fecha else '—' }}</td>
+              <td>{% if r.estatus_caso %}<span class="badge azul">{{ r.estatus_caso }}</span>{% else %}<span class="badge amarillo">Pendiente</span>{% endif %}</td>
+              <td><a href="/reporte/{{ r.id }}" class="btn btn-outline btn-sm">Ver</a></td>
+            </tr>
+            {% endfor %}
+          {% else %}
+            <tr><td colspan="6" style="text-align:center;padding:40px;color:var(--texto-mut)">No hay reportes registrados aún.</td></tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

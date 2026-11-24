@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Evaluaciones - Centinela Digital{% endblock %}
+{% block nav_eval %}activo{% endblock %}
+{% block content %}
+<div class="container fade-in">
+  <div class="page-header">
+    <h2>Evaluaciones de riesgo</h2>
+    <p>Clasificación de prioridad de los reportes recibidos</p>
+  </div>
+
+  <div class="card">
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>ID</th><th>Reporte</th><th>Nivel de riesgo</th><th>Prioridad</th><th>Acción</th></tr></thead>
+        <tbody>
+          {% if evaluaciones %}
+            {% for e in evaluaciones %}
+            <tr>
+              <td><strong>#{{ e.id }}</strong></td>
+              <td>#{{ e.reporte_id }}</td>
+              <td>
+                {% if e.nivel_riesgo=='Crítica' %}<span class="badge rojo">🔴 Crítica</span>
+                {% elif e.nivel_riesgo=='Alta' %}<span class="badge amarillo">🟠 Alta</span>
+                {% elif e.nivel_riesgo=='Media' %}<span class="badge azul">🟡 Media</span>
+                {% else %}<span class="badge verde">🟢 Baja</span>{% endif %}
+              </td>
+              <td><strong>{{ e.prioridad }}</strong></td>
+              <td><a href="/reporte/{{ e.reporte_id }}" class="btn btn-outline btn-sm">Ver reporte</a></td>
+            </tr>
+            {% endfor %}
+          {% else %}
+            <tr><td colspan="5" style="text-align:center;padding:40px;color:var(--texto-mut)">Sin evaluaciones registradas.</td></tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

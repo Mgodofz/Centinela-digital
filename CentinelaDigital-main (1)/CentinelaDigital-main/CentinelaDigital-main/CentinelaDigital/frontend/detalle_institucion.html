@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}{{ institucion.nombre_institucion }} - Centinela Digital{% endblock %}
+{% block nav_inst %}activo{% endblock %}
+{% block content %}
+<div class="container fade-in">
+  <div class="page-header">
+    <a href="/instituciones" style="font-size:13px;color:var(--texto-mut);text-decoration:none">← Volver a instituciones</a>
+    <h2 style="margin-top:8px">{{ institucion.nombre_institucion }}</h2>
+    <p>{{ institucion.especialidad }}</p>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <h3 style="font-size:16px;margin-bottom:16px">Datos de contacto</h3>
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div>
+          <div style="font-size:11px;color:var(--texto-mut);text-transform:uppercase;font-weight:700;letter-spacing:.5px">Especialidad</div>
+          <div style="font-size:14.5px;font-weight:600;margin-top:2px">{{ institucion.especialidad }}</div>
+        </div>
+        <div>
+          <div style="font-size:11px;color:var(--texto-mut);text-transform:uppercase;font-weight:700;letter-spacing:.5px">Contacto</div>
+          <div style="font-size:14.5px;font-weight:600;margin-top:2px">📞 {{ institucion.contacto }}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3 style="font-size:16px;margin-bottom:16px">Actividad</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div style="padding:16px;background:#fdf2f2;border-radius:10px">
+          <div style="font-size:22px;font-weight:800;color:var(--rojo)">{{ canalizaciones|length if canalizaciones else 0 }}</div>
+          <div style="font-size:12px;color:var(--texto-mut)">Canalizaciones</div>
+        </div>
+        <div style="padding:16px;background:#ecfdf5;border-radius:10px">
+          <div style="font-size:22px;font-weight:800;color:#047857">{{ cerrados }}</div>
+          <div style="font-size:12px;color:var(--texto-mut)">Casos cerrados</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:24px">
+    <div class="card-header"><h3>Casos canalizados</h3></div>
+    {% if canalizaciones %}
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Reporte</th><th>Fecha de canalización</th><th>Acciones</th></tr></thead>
+        <tbody>
+          {% for c in canalizaciones %}
+          <tr>
+            <td><strong>#{{ c.reporte_id }}</strong></td>
+            <td style="color:var(--texto-mut);font-size:13px">{{ c.fecha_canalizacion.strftime('%d/%m/%Y %H:%M') if c.fecha_canalizacion else '—' }}</td>
+            <td><a href="/reporte/{{ c.reporte_id }}" class="btn btn-outline btn-sm">Ver reporte</a></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+      <p class="empty-state" style="padding:30px">Aún no hay reportes canalizados a esta institución.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

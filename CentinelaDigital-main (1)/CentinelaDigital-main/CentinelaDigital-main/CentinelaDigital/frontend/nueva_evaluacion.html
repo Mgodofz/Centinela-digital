@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}Nueva evaluación - Centinela Digital{% endblock %}
+{% block content %}
+<div class="container fade-in">
+  <div class="page-header">
+    <a href="/evaluaciones" style="font-size:13px;color:var(--texto-mut);text-decoration:none">← Volver a evaluaciones</a>
+    <h2 style="margin-top:8px">Nueva evaluación de riesgo</h2>
+    <p>Clasifica la prioridad de un reporte para su atención oportuna</p>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <form method="POST" action="/evaluaciones/nueva">
+        <div class="form-group">
+          <label>Reporte *</label>
+          <select name="reporte_id" class="form-control" required>
+            <option value="">Selecciona un reporte…</option>
+            {% for r in reportes %}
+            <option value="{{ r.id }}">#{{ r.id }} — {{ r.incidente[:60] }}{% if r.incidente|length > 60 %}…{% endif %}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Nivel de riesgo *</label>
+          <select name="nivel_riesgo" class="form-control" required>
+            <option value="Baja">🟢 Baja</option>
+            <option value="Media">🟡 Media</option>
+            <option value="Alta">🟠 Alta</option>
+            <option value="Crítica">🔴 Crítica</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Prioridad (1 = más urgente, 4 = menos) *</label>
+          <input type="number" name="prioridad" min="1" max="4" value="2" class="form-control" required>
+        </div>
+        <button class="btn btn-primary" style="width:100%;justify-content:center;padding:13px;font-size:14px">
+          Guardar evaluación
+        </button>
+      </form>
+    </div>
+
+    <div class="card">
+      <h3 style="font-size:16px;margin-bottom:14px">📊 Guía de niveles</h3>
+      <div style="padding:14px;background:#fef2f2;border-radius:10px;margin-bottom:10px">
+        <strong style="color:#b91c1c;font-size:14px">🔴 Crítica</strong>
+        <p style="font-size:12.5px;color:var(--texto-mut);margin-top:4px">Peligro inminente. Atención inmediata.</p>
+      </div>
+      <div style="padding:14px;background:#fffbeb;border-radius:10px;margin-bottom:10px">
+        <strong style="color:#b45309;font-size:14px">🟠 Alta</strong>
+        <p style="font-size:12.5px;color:var(--texto-mut);margin-top:4px">Atención prioritaria en menos de 24h.</p>
+      </div>
+      <div style="padding:14px;background:#eff6ff;border-radius:10px;margin-bottom:10px">
+        <strong style="color:#1d4ed8;font-size:14px">🟡 Media</strong>
+        <p style="font-size:12.5px;color:var(--texto-mut);margin-top:4px">Atención en los próximos días.</p>
+      </div>
+      <div style="padding:14px;background:#ecfdf5;border-radius:10px">
+        <strong style="color:#047857;font-size:14px">🟢 Baja</strong>
+        <p style="font-size:12.5px;color:var(--texto-mut);margin-top:4px">Seguimiento regular.</p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

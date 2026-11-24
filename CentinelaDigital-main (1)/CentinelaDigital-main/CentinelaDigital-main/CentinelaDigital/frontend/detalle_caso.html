@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% block title %}Caso #{{ caso.id }} - Centinela Digital{% endblock %}
+{% block nav_panel %}{% endblock %}
+{% block extra_css %}
+<style>
+.tabs{display:flex;gap:4px;border-bottom:2px solid var(--borde);margin-bottom:22px;overflow-x:auto}
+.tab{padding:12px 20px;font-size:14px;font-weight:600;cursor:pointer;border:none;background:transparent;color:var(--texto-mut);border-bottom:3px solid transparent;margin-bottom:-2px;transition:.18s;white-space:nowrap}
+.tab:hover{color:var(--rojo)}
+.tab.activo{color:var(--rojo);border-bottom-color:var(--rojo)}
+.panel{display:none}
+.panel.activo{display:block;animation:fadeIn .3s}
+.chat-msg{padding:12px 14px;border-radius:10px;margin-bottom:10px;font-size:14px;max-width:80%}
+.chat-msg.citizen{background:#fdf2f2;margin-left:auto}
+.chat-msg.officer{background:#f3f4f6}
+.chat-msg small{display:block;font-size:11px;font-weight:700;color:var(--rojo);margin-bottom:3px}
+</style>
+{% endblock %}
+{% block content %}
+<div class="container fade-in">
+  <div class="page-header">
+    <a href="/casos" style="font-size:13px;color:var(--texto-mut);text-decoration:none">← Volver a casos</a>
+    <h2 style="margin-top:8px">Caso #{{ caso.id }} — Reporte #{{ caso.reporte_id }}</h2>
+    <p>Responsable: {{ caso.responsable }} · Estado: {{ caso.estatus_caso }}</p>
+  </div>
+  <div class="tabs">
+    <button class="tab activo" onclick="showTab('info', this)">📋 Información</button>
+    <button class="tab" onclick="showTab('seguimiento', this)">📈 Seguimiento</button>
+    <button class="tab" onclick="showTab('mensajes', this)">💬 Mensajes</button>
+    <button class="tab" onclick="showTab('evidencias', this)">📎 Evidencias</button>
+    <button class="tab" onclick="showTab('cierre', this)">✅ Cierre</button>
+  </div>
+  <div id="tab-info" class="panel activo">
+    <div class="card">
+      <h3>Información del caso</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px">
+        <div><div style="font-size:12px;color:var(--texto-mut);text-transform:uppercase;font-weight:700">ID del caso</div><div style="font-size:15px;font-weight:600">#{{ caso.id }}</div></div>
+        <div><div style="font-size:12px;color:var(--texto-mut);text-transform:uppercase;font-weight:700">Reporte vinculado</div><div style="font-size:15px;font-weight:600">#{{ caso.reporte_id }}</div></div>
+        <div><div style="font-size:12px;color:var(--texto-mut);text-transform:uppercase;font-weight:700">Responsable</div><div style="font-size:15px;font-weight:600">{{ caso.responsable }}</div></div>
+        <div><div style="font-size:12px;color:var(--texto-mut);text-transform:uppercase;font-weight:700">Estatus</div><div><span class="badge azul">{{ caso.estatus_caso }}</span></div></div>
+      </div>
+    </div>
+  </div>
+  <div id="tab-seguimiento" class="panel">
+    <div class="card">
+      <div class="card-header"><h3>Seguimiento del caso</h3></div>
+      <div class="timeline">
+        {% if seguimiento %}
+          {% for s in seguimiento %}
+          <div class="timeline-item completado"><h5>{{ s.comentario_avance }}</h5><span>{{ s.fecha_avance.strftime('%d/%m/%Y %H:%M') if s.fecha_avance else '' }}</span></div>
+          {% endfor %}
+        {% else %}
+          <p class="empty-state" style="padding:20px">Sin avances registrados aún.</p>
+        {% endif %}
+      </div>
+      <form method="POST" action="/caso/{{ caso.id }}/seguimiento" style="margin-top:20px;display:flex;gap:8px">
+        <input type="text" name="comentario_avance" class="form-control" placeholder="Registrar nuevo avance…" required>
+        <button class="btn btn-primary">Agregar</button>
+      </form>
+    </div>
+  </div>
+  <div id="tab-mensajes" class="panel">
+    <div class="card">
+      <div class="card-header"><h3>Canal de comunicación</h3></div>
+      {% if comunicaciones %}
+        {% for c in comunicaciones %}
+        <div class="chat-msg {% if c.remitente=='ciudadano' %}citizen{% else %}officer{% endif %}"><small>{{ c.remitente|capitalize }}</small>{{ c.mensaje }}</div>
+        {% endfor %}
+      {% else %}
+        <p class="empty-state" style="padding:30px">Sin mensajes aún.</p>
+      {% endif %}
+      <form method="POST" action="/caso/{{ caso.id }}/mensaje" style="margin-top:16px;display:flex;gap:8px">
+        <input type="text" name="mensaje" class="form-control" placeholder="Escribe un mensaje..." required>
+        <button class="btn btn-primary">Enviar</button>
+      </form>
+    </div>
+  </div>
+  <div id="tab-evidencias" class="panel">
+    <div class="card">
+      <div class="card-header"><h3>Documentos de evidencia</h3></div>
+      {% if evidencias %}
+        {% for e in evidencias %}
+        <div style="display:flex;align-items:center;gap:10px;padding:12px;border:1px solid var(--borde);border-radius:8px;margin-bottom:8px">
+          📄 <div style="flex:1"><strong>{{ e.tipo_evidencia }}</strong><br><small style="color:var(--texto-mut)">{{ e.ruta_archivo }}</small></div>
+          <a href="{{ e.ruta_archivo }}" target="_blank" class="btn btn-outline btn-sm">Abrir</a>
+        </div>
+        {% endfor %}
+      {% else %}
+        <p class="empty-state" style="padding:30px">Sin documentos aún. Súbelos desde <a href="/evidencias" style="color:var(--rojo);font-weight:600">Evidencias</a>.</p>
+      {% endif %}
+    </div>
+  </div>
+  <div id="tab-cierre" class="panel">
+    <div class="card">
+      <div class="card-header"><h3>Cierre y retroalimentación</h3></div>
+      {% if cierre %}
+      <div style="padding:16px;background:#ecfdf5;border-radius:10px;border-left:4px solid var(--exito)">
+        <strong style="color:#047857">Caso cerrado</strong>
+        <p style="margin-top:6px;font-size:14px">Satisfacción: {{ cierre.calificacion_satisfaccion }}/5</p>
+        <p style="font-size:14px;color:var(--texto-mut);margin-top:4px">{{ cierre.lecciones_aprendidas }}</p>
+      </div>
+      {% else %}
+      <form method="POST" action="/caso/{{ caso.id }}/cerrar">
+        <div class="form-group"><label>Calificación de satisfacción (1-5)</label><input type="number" name="calificacion" min="1" max="5" class="form-control" required></div>
+        <div class="form-group"><label>Lecciones aprendidas</label><textarea name="lecciones" class="form-control" placeholder="Observaciones finales del caso..." required></textarea></div>
+        <button class="btn btn-primary">Cerrar caso</button>
+      </form>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+function showTab(id, btn){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('activo'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('activo'));
+  document.getElementById('tab-'+id).classList.add('activo');
+  btn.classList.add('activo');
+}
+</script>
+{% endblock %}

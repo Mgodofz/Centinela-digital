@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block title %}Nuevo reporte - Centinela Digital{% endblock %}
+{% block nav_nuevo %}activo{% endblock %}
+{% block extra_css %}
+<style>
+.hero-form{background:linear-gradient(135deg,#8B0000 0%,#a50000 100%);color:#fff;padding:38px 28px;border-radius:16px;margin-bottom:28px;position:relative;overflow:hidden}
+.hero-form::before{content:'';position:absolute;right:-50px;top:-50px;width:220px;height:220px;border-radius:50%;background:rgba(255,255,255,.07)}
+.hero-form h2{font-size:26px;font-weight:800;margin-bottom:8px;position:relative}
+.hero-form p{opacity:.9;font-size:14px;position:relative}
+.tip-item{display:flex;gap:12px;padding:14px;border-radius:10px;background:#fdf2f2;margin-bottom:10px;font-size:13px;line-height:1.5}
+.tip-item strong{color:var(--rojo);display:block;margin-bottom:2px}
+.urgencia-opts{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.urgencia-opts input{display:none}
+.urgencia-opts label{padding:12px 6px;text-align:center;border:2px solid var(--borde);border-radius:10px;cursor:pointer;font-size:13px;font-weight:600;transition:.18s}
+.urgencia-opts input:checked + label{border-color:var(--rojo);background:#fdf2f2;color:var(--rojo)}
+.urgencia-opts input:checked + label.critico{border-color:#ef4444;background:#fef2f2;color:#b91c1c}
+</style>
+{% endblock %}
+{% block content %}
+<div class="container fade-in">
+  <div class="hero-form">
+    <h2>Registrar una denuncia</h2>
+    <p>Toda la información se maneja de forma confidencial. Los campos con * son obligatorios.</p>
+  </div>
+  <div class="grid-2">
+    <div class="card">
+      <form method="POST" action="/nuevo-reporte">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Tipo de incidente *</label>
+            <select class="form-control" name="categoria" required>
+              <option value="">Selecciona…</option>
+              <option>Violencia física</option>
+              <option>Violencia psicológica</option>
+              <option>Violencia doméstica</option>
+              <option>Acoso escolar</option>
+              <option>Acoso laboral</option>
+              <option>Violencia sexual</option>
+              <option>Otro</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Fecha del incidente *</label>
+            <input type="date" class="form-control" name="fecha" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Descripción del incidente *</label>
+          <textarea class="form-control" name="incidente" placeholder="Describe lo sucedido con el mayor detalle posible..." required></textarea>
+        </div>
+        <div class="form-group">
+          <label>Nivel de urgencia *</label>
+          <div class="urgencia-opts">
+            <input type="radio" id="u1" name="nivel_riesgo" value="Baja" required><label for="u1">🟢 Baja</label>
+            <input type="radio" id="u2" name="nivel_riesgo" value="Media"><label for="u2">🟡 Media</label>
+            <input type="radio" id="u3" name="nivel_riesgo" value="Alta"><label for="u3">🟠 Alta</label>
+            <input type="radio" id="u4" name="nivel_riesgo" value="Crítica"><label for="u4" class="critico">🔴 Crítica</label>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Ubicación del incidente</label>
+          <div style="display:flex;gap:8px">
+            <input type="text" class="form-control" name="ubicacion" id="ubicacion" placeholder="Calle, colonia, referencias…">
+            <button type="button" class="btn btn-outline" onclick="usarGPS()">📍 GPS</button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Nota importante</label>
+          <p style="font-size:13px;color:var(--texto-mut);background:#f9fafb;padding:10px 12px;border-radius:8px;border-left:3px solid var(--rojo)">
+            Después de crear el reporte, un administrador podrá adjuntar archivos de evidencia al caso correspondiente.
+          </p>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;padding:14px;font-size:15px">🛡️ Enviar reporte</button>
+      </form>
+    </div>
+    <div>
+      <div class="card" style="margin-bottom:20px">
+        <h3 style="font-size:16px;margin-bottom:14px">💡 Recomendaciones</h3>
+        <div class="tip-item"><div><strong>Sé específico</strong>Incluye fechas, lugares y personas involucradas si las conoces.</div></div>
+        <div class="tip-item"><div><strong>Adjunta evidencia</strong>Fotos o documentos pueden agregarse después desde el caso.</div></div>
+        <div class="tip-item"><div><strong>Tu seguridad primero</strong>No pongas en riesgo tu integridad al recabar información.</div></div>
+      </div>
+      <div class="card" style="background:linear-gradient(135deg,#fff 0%,#fdf2f2 100%);border-color:#fecaca">
+        <h3 style="font-size:15px;margin-bottom:10px;color:var(--rojo)">📞 ¿Emergencia inmediata?</h3>
+        <p style="font-size:13px;color:var(--texto-mut);margin-bottom:12px">Si estás en peligro ahora mismo, llama primero a las autoridades.</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <span class="badge rojo">911</span>
+          <span class="badge rojo">089 Denuncia</span>
+          <span class="badge rojo">Línea Mujer</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+function usarGPS(){
+  if(!navigator.geolocation){alert('Tu navegador no soporta geolocalización');return;}
+  const btn=event.target; btn.textContent='⏳…';
+  navigator.geolocation.getCurrentPosition(
+    p=>{document.getElementById('ubicacion').value=`Lat ${p.coords.latitude.toFixed(5)}, Lng ${p.coords.longitude.toFixed(5)}`;btn.textContent='📍 GPS';},
+    ()=>{alert('No pudimos obtener tu ubicación');btn.textContent='📍 GPS';}
+  );
+}
+</script>
+{% endblock %}

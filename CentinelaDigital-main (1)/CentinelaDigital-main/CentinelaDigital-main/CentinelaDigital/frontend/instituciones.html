@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Instituciones - Centinela Digital{% endblock %}
+{% block nav_inst %}activo{% endblock %}
+{% block extra_css %}
+<style>
+.inst-card{background:#fff;border:1px solid var(--borde);border-radius:14px;padding:22px;transition:.2s}
+.inst-card:hover{transform:translateY(-3px);box-shadow:var(--sombra-md)}
+.inst-icono{width:52px;height:52px;border-radius:12px;background:linear-gradient(135deg,#8B0000,#a50000);color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:14px}
+.inst-card h4{font-size:16px;margin-bottom:4px}
+.inst-card .esp{font-size:13px;color:var(--texto-mut);margin-bottom:12px}
+.inst-contacto{display:flex;align-items:center;gap:8px;font-size:13px;padding-top:12px;border-top:1px solid var(--borde)}
+</style>
+{% endblock %}
+{% block content %}
+<div class="container fade-in">
+  <div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:12px">
+    <div>
+      <h2>Instituciones aliadas</h2>
+      <p>Organismos que reciben casos canalizados</p>
+    </div>
+    <button class="btn btn-primary" onclick="document.getElementById('form-inst').style.display='block'">➕ Nueva institución</button>
+  </div>
+
+  <div class="card" id="form-inst" style="display:none;margin-bottom:24px">
+    <div class="card-header"><h3>Registrar institución</h3></div>
+    <form method="POST" action="/instituciones">
+      <div class="form-row">
+        <div class="form-group"><label>Nombre</label><input name="nombre" class="form-control" required></div>
+        <div class="form-group"><label>Especialidad</label><input name="especialidad" class="form-control" placeholder="Ej. Violencia doméstica" required></div>
+      </div>
+      <div class="form-group"><label>Contacto</label><input name="contacto" class="form-control" placeholder="Teléfono o correo" required></div>
+      <button class="btn btn-primary">Guardar institución</button>
+    </form>
+  </div>
+
+  {% if instituciones %}
+  <div class="grid-auto">
+    {% for i in instituciones %}
+    <div class="inst-card">
+      <div class="inst-icono">🏛️</div>
+      <h4>{{ i.nombre_institucion }}</h4>
+      <div class="esp">{{ i.especialidad }}</div>
+      <div class="inst-contacto">📞 {{ i.contacto }}</div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="card"><div class="empty-state"><div class="icono">🏛️</div><h4>Sin instituciones registradas</h4><p>Agrega la primera para comenzar a canalizar casos.</p></div></div>
+  {% endif %}
+</div>
+{% endblock %}

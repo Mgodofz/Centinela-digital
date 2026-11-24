@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Mis reportes - Centinela Digital{% endblock %}
+{% block nav_mis %}activo{% endblock %}
+{% block extra_css %}
+<style>
+.filtros{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px}
+.chip{padding:8px 16px;border-radius:20px;border:1px solid var(--borde);background:#fff;font-size:13px;font-weight:600;cursor:pointer;transition:.18s;text-decoration:none;color:var(--texto)}
+.chip:hover{border-color:var(--rojo);color:var(--rojo)}
+.chip.activo{background:var(--rojo);color:#fff;border-color:var(--rojo)}
+.reporte-card{background:#fff;border:1px solid var(--borde);border-radius:14px;padding:20px;margin-bottom:14px;transition:.2s;display:flex;gap:18px;align-items:flex-start;text-decoration:none;color:inherit}
+.reporte-card:hover{transform:translateX(4px);box-shadow:var(--sombra-md);border-color:#fca5a5}
+.reporte-id{width:52px;height:52px;border-radius:12px;background:#fdf2f2;color:var(--rojo);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px;flex-shrink:0}
+.reporte-cuerpo{flex:1}
+.reporte-cuerpo h4{font-size:15px;font-weight:700;margin-bottom:4px}
+.reporte-meta{display:flex;gap:14px;font-size:12px;color:var(--texto-mut);flex-wrap:wrap}
+</style>
+{% endblock %}
+{% block content %}
+<div class="container fade-in">
+  <div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:12px">
+    <div><h2>Mis reportes</h2><p>Sigue el estado de tus denuncias en tiempo real</p></div>
+    <a href="/nuevo-reporte" class="btn btn-primary">➕ Nuevo reporte</a>
+  </div>
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-icon rojo">📋</div><div><div class="stat-valor">{{ reportes|length if reportes else 0 }}</div><div class="stat-label">Total reportes</div></div></div>
+    <div class="stat-card"><div class="stat-icon amarillo">⏳</div><div><div class="stat-valor">{{ pendientes|default(0) }}</div><div class="stat-label">Pendientes</div></div></div>
+    <div class="stat-card"><div class="stat-icon azul">🔄</div><div><div class="stat-valor">{{ en_proceso|default(0) }}</div><div class="stat-label">En proceso</div></div></div>
+    <div class="stat-card"><div class="stat-icon verde">✅</div><div><div class="stat-valor">{{ resueltos|default(0) }}</div><div class="stat-label">Resueltos</div></div></div>
+  </div>
+  <div class="filtros">
+    <a href="/mis-reportes" class="chip activo">Todos</a>
+    <a href="/mis-reportes?estado=pendiente" class="chip">Pendientes</a>
+    <a href="/mis-reportes?estado=proceso" class="chip">En proceso</a>
+    <a href="/mis-reportes?estado=resuelto" class="chip">Resueltos</a>
+  </div>
+  {% if reportes %}
+    {% for r in reportes %}
+    <a href="/reporte/{{ r.id }}" class="reporte-card">
+      <div class="reporte-id">#{{ r.id }}</div>
+      <div class="reporte-cuerpo">
+        <h4>{{ r.incidente[:90] }}{% if r.incidente|length > 90 %}…{% endif %}</h4>
+        <div class="reporte-meta">
+          <span>📅 {{ r.fecha.strftime('%d/%m/%Y %H:%M') if r.fecha else '—' }}</span>
+          <span>🏷️ {{ r.nivel_riesgo or 'Sin evaluar' }}</span>
+        </div>
+      </div>
+      <div>
+        {% if r.estatus_caso == 'Cerrado' %}<span class="badge verde">Resuelto</span>
+        {% elif r.estatus_caso %}<span class="badge azul">En proceso</span>
+        {% else %}<span class="badge amarillo">Pendiente</span>{% endif %}
+      </div>
+    </a>
+    {% endfor %}
+  {% else %}
+    <div class="card"><div class="empty-state">
+      <div class="icono">📭</div><h4>Aún no tienes reportes</h4>
+      <p>Cuando registres una denuncia aparecerá aquí con su estado de seguimiento.</p>
+      <a href="/nuevo-reporte" class="btn btn-primary" style="margin-top:16px">Crear mi primer reporte</a>
+    </div></div>
+  {% endif %}
+</div>
+{% endblock %}

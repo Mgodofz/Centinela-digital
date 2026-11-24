@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Mi perfil - Centinela Digital{% endblock %}
+{% block extra_css %}
+<style>
+.perfil-hero{background:linear-gradient(135deg,#8B0000,#a50000);border-radius:16px;padding:34px;color:#fff;display:flex;align-items:center;gap:24px;margin-bottom:24px}
+.perfil-avatar{width:90px;height:90px;border-radius:50%;background:#fff;color:var(--rojo);display:flex;align-items:center;justify-content:center;font-size:36px;font-weight:800}
+.perfil-hero h2{font-size:24px;margin-bottom:4px}
+.perfil-hero p{opacity:.85;font-size:14px}
+</style>
+{% endblock %}
+{% block content %}
+<div class="container fade-in">
+  <div class="perfil-hero">
+    <div class="perfil-avatar">{{ usuario.nombre[0]|upper if usuario else 'U' }}</div>
+    <div>
+      <h2>{{ usuario.nombre if usuario else 'Usuario' }}</h2>
+      <p>{{ usuario.correo if usuario else 'correo@ejemplo.com' }}</p>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-header"><h3>Editar datos</h3></div>
+      <form method="POST" action="/perfil">
+        <div class="form-group"><label>Nombre completo</label><input name="nombre" class="form-control" value="{{ usuario.nombre if usuario else '' }}" required></div>
+        <div class="form-group"><label>Correo electrónico</label><input type="email" name="correo" class="form-control" value="{{ usuario.correo if usuario else '' }}" required></div>
+        <div class="form-group"><label>Nueva contraseña (opcional)</label><input type="password" name="password" class="form-control" placeholder="Dejar vacío para no cambiar"></div>
+        <button class="btn btn-primary">Guardar cambios</button>
+      </form>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><h3>Mi actividad</h3></div>
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--borde)">
+          <span style="color:var(--texto-mut)">Reportes creados</span>
+          <strong>{{ total_reportes|default(0) }}</strong>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--borde)">
+          <span style="color:var(--texto-mut)">Casos resueltos</span>
+          <strong style="color:var(--exito)">{{ resueltos|default(0) }}</strong>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:12px 0">
+          <span style="color:var(--texto-mut)">Rol</span>
+          <span class="badge rojo">{{ session.get('rol','user')|upper }}</span>
+        </div>
+      </div>
+      <a href="/mis-reportes" class="btn btn-outline" style="margin-top:20px;width:100%;justify-content:center">Ver mis reportes</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Mensajes - Centinela Digital{% endblock %}
+{% block extra_css %}
+<style>
+.msg-grupo{background:#fff;border:1px solid var(--borde);border-radius:14px;margin-bottom:16px;overflow:hidden;box-shadow:var(--sombra-sm)}
+.msg-head{padding:16px 20px;background:#f9fafb;border-bottom:1px solid var(--borde);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+.msg-head h4{font-size:14.5px;font-weight:700}
+.msg-cuerpo{padding:16px 20px;max-height:340px;overflow-y:auto;display:flex;flex-direction:column;gap:8px}
+.msg{padding:10px 14px;border-radius:12px;font-size:13.5px;max-width:78%;line-height:1.5}
+.msg.citizen{background:#fdf2f2;align-self:flex-end;border-bottom-right-radius:4px}
+.msg.oficial{background:#f3f4f6;align-self:flex-start;border-bottom-left-radius:4px}
+.msg small{display:block;font-size:11px;font-weight:700;color:var(--rojo);margin-bottom:3px}
+.msg-form{display:flex;gap:8px;padding:12px 20px;border-top:1px solid var(--borde);background:#fafbfc}
+</style>
+{% endblock %}
+{% block content %}
+<div class="container fade-in">
+  <div class="page-header">
+    <h2>Centro de mensajes</h2>
+    <p>Todas las comunicaciones entre ciudadanos e instituciones por caso</p>
+  </div>
+
+  {% if conversaciones %}
+    {% for conv in conversaciones %}
+    <div class="msg-grupo">
+      <div class="msg-head">
+        <div>
+          <h4>Caso #{{ conv.caso_id }} — Reporte #{{ conv.reporte_id }}</h4>
+          <div style="font-size:12px;color:var(--texto-mut);margin-top:2px">
+            👤 {{ conv.responsable }} · {{ conv.mensajes|length }} mensaje{{ 's' if conv.mensajes|length != 1 else '' }}
+          </div>
+        </div>
+        <a href="/caso/{{ conv.caso_id }}" class="btn btn-outline btn-sm">Abrir caso →</a>
+      </div>
+      <div class="msg-cuerpo">
+        {% for m in conv.mensajes %}
+        <div class="msg {% if m.remitente == 'ciudadano' %}citizen{% else %}oficial{% endif %}">
+          <small>{{ m.remitente|capitalize }}</small>{{ m.mensaje }}
+        </div>
+        {% endfor %}
+      </div>
+      <form method="POST" action="/caso/{{ conv.caso_id }}/mensaje" class="msg-form">
+        <input type="text" name="mensaje" class="form-control" placeholder="Responder al ciudadano…" required>
+        <button class="btn btn-primary btn-sm">Enviar</button>
+      </form>
+    </div>
+    {% endfor %}
+  {% else %}
+  <div class="card">
+    <div class="empty-state">
+      <div class="icono">💬</div>
+      <h4>Sin mensajes aún</h4>
+      <p>Los mensajes aparecerán aquí cuando se comuniquen ciudadanos e instituciones.</p>
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

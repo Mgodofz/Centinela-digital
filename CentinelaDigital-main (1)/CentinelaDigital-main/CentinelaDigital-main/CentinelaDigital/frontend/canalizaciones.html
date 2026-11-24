@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Canalizaciones - Centinela Digital{% endblock %}
+{% block nav_canal %}activo{% endblock %}
+{% block content %}
+<div class="container fade-in">
+  <div class="page-header">
+    <h2>Canalizaciones</h2>
+    <p>Asignación de reportes a instituciones especializadas</p>
+  </div>
+
+  <div class="card" style="margin-bottom:24px">
+    <div class="card-header"><h3>Nueva canalización</h3></div>
+    <form method="POST" action="/canalizaciones" style="display:grid;grid-template-columns:1fr 1fr auto;gap:12px;align-items:end">
+      <div class="form-group" style="margin:0">
+        <label>ID del reporte</label>
+        <input name="reporte_id" type="number" class="form-control" required>
+      </div>
+      <div class="form-group" style="margin:0">
+        <label>Institución</label>
+        <select name="institucion_id" class="form-control" required>
+          <option value="">Selecciona…</option>
+          {% for i in instituciones %}<option value="{{ i.id }}">{{ i.nombre_institucion }}</option>{% endfor %}
+        </select>
+      </div>
+      <button class="btn btn-primary">Canalizar</button>
+    </form>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><h3>Historial</h3></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>ID</th><th>Reporte</th><th>Institución</th><th>Fecha</th></tr></thead>
+        <tbody>
+          {% if canalizaciones %}
+            {% for c in canalizaciones %}
+            <tr>
+              <td><strong>#{{ c.id }}</strong></td>
+              <td>#{{ c.reporte_id }}</td>
+              <td>{{ c.nombre_institucion }}</td>
+              <td style="color:var(--texto-mut);font-size:13px">{{ c.fecha_canalizacion.strftime('%d/%m/%Y %H:%M') if c.fecha_canalizacion else '' }}</td>
+            </tr>
+            {% endfor %}
+          {% else %}
+            <tr><td colspan="4" style="text-align:center;padding:40px;color:var(--texto-mut)">Sin canalizaciones registradas.</td></tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

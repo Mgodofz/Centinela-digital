@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Nuevo caso - Centinela Digital{% endblock %}
+{% block nav_panel %}{% endblock %}
+{% block content %}
+<div class="container fade-in">
+  <div class="page-header">
+    <a href="/casos" style="font-size:13px;color:var(--texto-mut);text-decoration:none">← Volver a casos</a>
+    <h2 style="margin-top:8px">Crear nuevo caso</h2>
+    <p>Vincula un reporte existente a un responsable para su atención</p>
+  </div>
+  <div class="grid-2">
+    <div class="card">
+      <form method="POST" action="/nuevo-caso">
+        <div class="form-group">
+          <label>Reporte a atender *</label>
+          <select name="reporte_id" class="form-control" required>
+            <option value="">Selecciona un reporte…</option>
+            {% for r in reportes_sin_caso %}
+            <option value="{{ r.id }}">#{{ r.id }} — {{ r.incidente[:60] }}{% if r.incidente|length > 60 %}…{% endif %}</option>
+            {% endfor %}
+          </select>
+          {% if not reportes_sin_caso %}<p style="font-size:12px;color:var(--texto-mut);margin-top:6px">Todos los reportes ya tienen un caso asignado.</p>{% endif %}
+        </div>
+        <div class="form-group">
+          <label>Responsable del caso *</label>
+          <input type="text" name="responsable" class="form-control" placeholder="Nombre del encargado o institución" required>
+        </div>
+        <div class="form-group">
+          <label>Estatus inicial</label>
+          <select name="estatus_caso" class="form-control">
+            <option value="Abierto">Abierto</option>
+            <option value="En proceso">En proceso</option>
+          </select>
+        </div>
+        <button class="btn btn-primary" style="width:100%;justify-content:center;padding:13px;font-size:14px" {% if not reportes_sin_caso %}disabled{% endif %}>Crear caso</button>
+      </form>
+    </div>
+    <div class="card" style="background:#f9fafb">
+      <h3 style="font-size:16px;margin-bottom:14px">ℹ️ ¿Qué es un caso?</h3>
+      <p style="font-size:13.5px;color:var(--texto-mut);line-height:1.7;margin-bottom:12px">
+        Un caso representa la <strong style="color:var(--texto)">asignación formal</strong> de un reporte a un responsable para su atención.
+      </p>
+      <p style="font-size:13.5px;color:var(--texto-mut);line-height:1.7;margin-bottom:8px">Desde el caso podrás:</p>
+      <ul style="font-size:13px;color:var(--texto-mut);line-height:1.9;padding-left:20px">
+        <li>Registrar avances en el tiempo</li>
+        <li>Comunicarte con el ciudadano</li>
+        <li>Adjuntar evidencias</li>
+        <li>Realizar el cierre con retroalimentación</li>
+      </ul>
+    </div>
+  </div>
+</div>
+{% endblock %}

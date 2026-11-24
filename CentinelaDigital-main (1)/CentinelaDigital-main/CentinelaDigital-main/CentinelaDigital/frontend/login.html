@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Centinela Digital - Iniciar Sesión</title>
+<style>
+:root{ --rojo:#8B0000; --rojo-osc:#6a0000; --borde:#e5e7eb; --texto:#1f2937; --texto-mut:#6b7280; }
+*{box-sizing:border-box;margin:0;padding:0}
+body{ font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif; min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px; color:var(--texto);
+  background: radial-gradient(circle at 15% 20%, rgba(255,255,255,.08), transparent 40%), radial-gradient(circle at 85% 80%, rgba(0,0,0,.25), transparent 45%), linear-gradient(135deg, #8B0000 0%, #5a0000 100%); }
+a{color:inherit}
+.pantalla-login{ display:flex; width:100%; max-width:1050px; gap:40px; align-items:center; }
+.col-izq{ display:flex; flex-direction:column; align-items:center; width:360px; flex-shrink:0; }
+.contenedor-logo{ width:130px; height:130px; background:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; margin-bottom:20px; overflow:hidden; box-shadow:0 8px 24px rgba(0,0,0,.35), 0 0 0 6px rgba(255,255,255,.15); }
+.contenedor-logo img{ width:78%; height:78%; object-fit:contain; filter:brightness(0) saturate(100%) invert(14%) sepia(92%) saturate(6447%) hue-rotate(1deg) brightness(96%) contrast(118%); }
+.caja-login{ background:#fff; width:100%; padding:30px 26px; border-radius:18px; box-shadow:0 18px 40px rgba(0,0,0,.35); }
+.caja-login h2{ color:var(--rojo); font-size:22px; margin-bottom:4px; font-weight:800; text-align:center; letter-spacing:.5px; }
+.caja-login p.sub{ color:var(--texto-mut); font-size:13px; margin-bottom:22px; text-align:center; }
+.alerta{ background:#fef2f2; border:1px solid #fecaca; color:#b91c1c; padding:10px 14px; border-radius:9px; font-size:13px; margin-bottom:16px; font-weight:500; animation:fadeIn .3s; }
+.campo{margin-bottom:15px;text-align:left}
+.campo label{ display:block; font-size:11px; font-weight:700; color:var(--rojo); margin-bottom:5px; text-transform:uppercase; letter-spacing:.5px; }
+.campo-wrap{position:relative}
+.campo input{ width:100%; padding:11px 44px 11px 14px; border:2px solid var(--borde); border-radius:9px; outline:none; font-size:14px; transition:.18s; background:#fff; color:var(--texto); font-family:inherit; }
+.campo input:focus{ border-color:var(--rojo); box-shadow:0 0 0 3px rgba(139,0,0,.09); }
+.toggle-pass{ position:absolute; right:8px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; font-size:16px; padding:6px 8px; border-radius:6px; opacity:.6; transition:.15s; }
+.toggle-pass:hover{opacity:1; background:#f3f4f6}
+.btn-ingresar{ width:100%; background:var(--rojo); color:#fff; border:none; padding:13px; border-radius:9px; font-weight:700; font-size:14px; cursor:pointer; margin-top:6px; transition:.2s; letter-spacing:.3px; font-family:inherit; }
+.btn-ingresar:hover{background:var(--rojo-osc); transform:translateY(-1px); box-shadow:0 8px 18px rgba(139,0,0,.3)}
+.btn-ingresar:disabled{opacity:.7; cursor:not-allowed; transform:none}
+.link-reg{margin-top:18px; font-size:13px; color:var(--texto-mut); text-align:center}
+.link-reg a{color:var(--rojo); font-weight:700; text-decoration:none}
+.link-reg a:hover{text-decoration:underline}
+.volver{ display:inline-flex; align-items:center; gap:6px; margin-top:18px; font-size:13px; color:rgba(255,255,255,.85); text-decoration:none; font-weight:600; }
+.volver:hover{color:#fff}
+.col-der{ flex-grow:1; height:490px; background:linear-gradient(135deg, #600000 0%, #400000 100%); border-radius:20px; overflow:hidden; position:relative; box-shadow:0 20px 45px rgba(0,0,0,.45); }
+.col-der::before{ content:'🛡️'; position:absolute; right:-30px; top:-40px; font-size:220px; opacity:.06; pointer-events:none; }
+.diapositiva{ position:absolute; inset:0; opacity:0; transition:opacity .8s ease; display:flex; flex-direction:column; justify-content:flex-end; padding:40px; color:#fff; }
+.diapositiva.activa{opacity:1}
+.info-carrusel{position:relative; z-index:2}
+.info-carrusel h3{font-size:26px; margin-bottom:10px; font-weight:800}
+.info-carrusel p{font-size:15px; opacity:.9; line-height:1.6}
+.indicadores{ position:absolute; bottom:25px; right:30px; z-index:3; display:flex; gap:8px; }
+.punto{ width:10px; height:10px; background:rgba(255,255,255,.4); border-radius:50%; cursor:pointer; transition:all .3s ease; border:none; padding:0; }
+.punto.activo{background:#fff; width:26px; border-radius:8px}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+@media (max-width: 850px){ .pantalla-login{flex-direction:column; gap:24px} .col-izq{width:100%; max-width:380px} .col-der{width:100%; height:280px; border-radius:16px} .col-der::before{font-size:160px} }
+</style>
+</head>
+<body>
+<div class="pantalla-login">
+  <div class="col-izq">
+    <div class="contenedor-logo"><img src="{{ url_for('static', filename='img/logo.webp') }}" alt="Logo"></div>
+    <div class="caja-login">
+      <h2>CENTINELA DIGITAL</h2>
+      <p class="sub">Plataforma Inteligente de Prevención</p>
+      {% if error %}<div class="alerta">⚠️ {{ error }}</div>{% endif %}
+      <form action="/login" method="POST" id="form-login">
+        <div class="campo">
+          <label for="correo">Correo electrónico</label>
+          <div class="campo-wrap">
+            <input type="email" id="correo" name="correo" placeholder="usuario@ejemplo.com" autocomplete="email" required>
+          </div>
+        </div>
+        <div class="campo">
+          <label for="password">Contraseña</label>
+          <div class="campo-wrap">
+            <input type="password" id="password" name="password" placeholder="••••••••" autocomplete="current-password" required>
+            <button type="button" class="toggle-pass" onclick="togglePass()" aria-label="Mostrar contraseña">👁️</button>
+          </div>
+        </div>
+        <button type="submit" class="btn-ingresar" id="btn-submit">INICIAR SESIÓN</button>
+      </form>
+      <div class="link-reg">¿No tienes cuenta? <a href="/registro">Regístrate</a></div>
+    </div>
+    <a href="/" class="volver">← Volver al inicio</a>
+  </div>
+  <div class="col-der">
+    <div class="diapositiva activa"><div class="info-carrusel"><h3>Detección &amp; Prevención</h3><p>Monitoreo ciudadano inteligente para canalizar situaciones de riesgo a las instituciones adecuadas de forma segura.</p></div></div>
+    <div class="diapositiva"><div class="info-carrusel"><h3>Canalización Eficiente</h3><p>Conectamos reportes de manera confidencial y rápida con especialistas en atención comunitaria.</p></div></div>
+    <div class="diapositiva"><div class="info-carrusel"><h3>Seguimiento en Tiempo Real</h3><p>Consulta el estatus de tus solicitudes y contribuye activamente al bienestar de tu comunidad.</p></div></div>
+    <div class="indicadores">
+      <button class="punto activo" onclick="cambiarSlide(0)"></button>
+      <button class="punto" onclick="cambiarSlide(1)"></button>
+      <button class="punto" onclick="cambiarSlide(2)"></button>
+    </div>
+  </div>
+</div>
+<script>
+function togglePass(){ const i=document.getElementById('password'); i.type = i.type==='password'?'text':'password'; }
+document.getElementById('form-login').addEventListener('submit', () => { const b=document.getElementById('btn-submit'); b.disabled=true; b.textContent='INGRESANDO…'; });
+let idx=0; const slides=document.querySelectorAll('.diapositiva'); const puntos=document.querySelectorAll('.punto');
+function cambiarSlide(n){ slides[idx].classList.remove('activa'); puntos[idx].classList.remove('activo'); idx=(n+slides.length)%slides.length; slides[idx].classList.add('activa'); puntos[idx].classList.add('activo'); }
+setInterval(()=>cambiarSlide(idx+1), 4500);
+</script>
+</body>
+</html>

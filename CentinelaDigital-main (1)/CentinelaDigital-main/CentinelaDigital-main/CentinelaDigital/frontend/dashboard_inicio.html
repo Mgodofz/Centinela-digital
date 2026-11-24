@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}Centinela Digital - Portal Ciudadano{% endblock %}
+{% block nav_inicio %}activo{% endblock %}
+{% block extra_css %}
+<style>
+.hero { max-width: 1200px; margin: 40px auto; padding: 0 30px; display: grid; grid-template-columns: 1fr 1fr; gap: 50px; align-items: center; }
+.hero-texto h2 { font-size: 42px; font-weight: 800; color: #111; line-height: 1.15; margin-bottom: 20px; }
+.hero-texto h2 span { color: var(--rojo); }
+.hero-texto p { font-size: 16px; color: #555; line-height: 1.6; margin-bottom: 28px; }
+.hero-botones { display: flex; gap: 12px; flex-wrap: wrap; }
+.btn-denuncia { display: inline-flex; align-items: center; gap: 10px; background: #fff; border: 2px solid var(--rojo); color: var(--rojo); padding: 13px 26px; border-radius: 10px; font-size: 15px; font-weight: 700; text-decoration: none; transition: .25s; }
+.btn-denuncia:hover { background: var(--rojo); color: #fff; transform: translateY(-2px); box-shadow: 0 10px 25px rgba(139,0,0,.25); }
+.hero-imagen { height: 400px; border-radius: 16px; overflow: hidden; box-shadow: 0 20px 40px rgba(139,0,0,.18); background: #fdf2f2; display: flex; align-items: center; justify-content: center; font-size: 80px; }
+.hero-imagen img { width: 100%; height: 100%; object-fit: cover; }
+.barra-confianza { max-width: 1200px; margin: 0 auto 40px; padding: 0 30px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.conf-item { background: #fff; border: 1px solid var(--borde); border-radius: 12px; padding: 18px 22px; display: flex; align-items: center; gap: 14px; }
+.conf-icon { width: 44px; height: 44px; border-radius: 10px; background: #fdf2f2; color: var(--rojo); display: flex; align-items: center; justify-content: center; font-size: 20px; }
+.conf-num { font-size: 24px; font-weight: 800; color: var(--rojo); line-height: 1; }
+.conf-lbl { font-size: 12.5px; color: var(--texto-mut); }
+.seccion-funciones { max-width: 1200px; margin: 0 auto 60px; padding: 40px 30px 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; border-top: 2px solid #eee; }
+.tarjeta-carac { text-align: center; padding: 24px 16px; border-radius: 14px; transition: .25s; }
+.tarjeta-carac:hover { background: #fdf2f2; transform: translateY(-4px); }
+.caja-icono { width: 64px; height: 64px; border-radius: 14px; background: linear-gradient(135deg, #8B0000, #a50000); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 28px; margin: 0 auto 14px; }
+.tarjeta-carac h4 { font-size: 15px; font-weight: 700; color: #222; margin-bottom: 6px; }
+.tarjeta-carac p { font-size: 12.5px; color: #666; line-height: 1.5; }
+@media (max-width: 900px) {
+  .hero { grid-template-columns: 1fr; gap: 30px; padding: 0 16px; }
+  .hero-texto h2 { font-size: 32px; }
+  .hero-imagen { height: 280px; }
+  .barra-confianza { grid-template-columns: 1fr; padding: 0 16px; }
+  .seccion-funciones { grid-template-columns: repeat(2, 1fr); padding: 30px 16px 0; }
+}
+</style>
+{% endblock %}
+{% block content %}
+<section class="hero fade-in">
+  <div class="hero-texto">
+    <h2>Tu voz también construye un <span>entorno más seguro</span></h2>
+    <p>Reporta de manera fácil y segura cualquier situación de violencia en tu comunidad. Tu denuncia cuenta, tu voz protege.</p>
+    <div class="hero-botones">
+      <a href="/nuevo-reporte" class="btn-denuncia">🛡️ Registrar una denuncia →</a>
+      {% if not session.get('usuario_id') %}
+        <a href="/registro" class="btn btn-outline">Crear cuenta</a>
+      {% else %}
+        <a href="/mis-reportes" class="btn btn-outline">Ver mis reportes</a>
+      {% endif %}
+    </div>
+  </div>
+  <div class="hero-imagen">
+    <img src="{{ url_for('static', filename='img/imagen1.jfif') }}" alt="Centinela Digital" onerror="this.parentElement.textContent='🛡️';">
+  </div>
+</section>
+
+<div class="barra-confianza">
+  <div class="conf-item"><div class="conf-icon">📋</div><div><div class="conf-num">{{ total_reportes|default(0) }}</div><div class="conf-lbl">Reportes ciudadanos registrados</div></div></div>
+  <div class="conf-item"><div class="conf-icon">🏛️</div><div><div class="conf-num">{{ total_instituciones|default(0) }}</div><div class="conf-lbl">Instituciones aliadas</div></div></div>
+  <div class="conf-item"><div class="conf-icon">✅</div><div><div class="conf-num">{{ cerrados|default(0) }}</div><div class="conf-lbl">Casos cerrados con éxito</div></div></div>
+</div>
+
+<div class="seccion-funciones">
+  <div class="tarjeta-carac"><div class="caja-icono">📝</div><h4>Denuncia fácil</h4><p>Completa el formulario en pocos minutos</p></div>
+  <div class="tarjeta-carac"><div class="caja-icono">📍</div><h4>Ubicación precisa</h4><p>Comparte la ubicación del incidente con GPS</p></div>
+  <div class="tarjeta-carac"><div class="caja-icono">🔒</div><h4>Seguro y confidencial</h4><p>Tus datos están protegidos siempre</p></div>
+  <div class="tarjeta-carac"><div class="caja-icono">📈</div><h4>Seguimiento en tiempo real</h4><p>Consulta el estado de tu reporte en todo momento</p></div>
+</div>
+{% endblock %}

@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}Evidencias - Centinela Digital{% endblock %}
+{% block extra_css %}
+<style>
+.ev-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px}
+.ev-card{background:#fff;border:1px solid var(--borde);border-radius:12px;padding:18px;transition:.2s}
+.ev-card:hover{transform:translateY(-2px);box-shadow:var(--sombra-md);border-color:#fca5a5}
+.ev-icon{width:52px;height:52px;border-radius:12px;background:#fdf2f2;color:var(--rojo);display:flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:12px}
+.ev-tipo{font-size:11.5px;font-weight:700;text-transform:uppercase;color:var(--rojo);letter-spacing:.4px}
+.ev-archivo{font-size:12.5px;color:var(--texto-mut);word-break:break-all;margin-top:4px;line-height:1.4}
+</style>
+{% endblock %}
+{% block content %}
+<div class="container fade-in">
+  <div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:12px">
+    <div>
+      <h2>Biblioteca de evidencias</h2>
+      <p>Todos los documentos adjuntos a casos del sistema</p>
+    </div>
+    <button class="btn btn-primary" onclick="document.getElementById('form-ev').style.display='block';this.style.display='none'">➕ Subir evidencia</button>
+  </div>
+
+  <div class="card" id="form-ev" style="display:none;margin-bottom:24px">
+    <div class="card-header"><h3>Subir nueva evidencia</h3></div>
+    <form method="POST" action="/evidencias" enctype="multipart/form-data">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Caso *</label>
+          <select name="caso_id" class="form-control" required>
+            <option value="">Selecciona un caso…</option>
+            {% for c in casos %}<option value="{{ c.id }}">Caso #{{ c.id }} — Rep. #{{ c.reporte_id }}</option>{% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Tipo de evidencia *</label>
+          <input type="text" name="tipo_evidencia" class="form-control" placeholder="Ej. Fotografía, documento PDF" required>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Archivo *</label>
+        <input type="file" name="archivo" class="form-control" required>
+      </div>
+      <button class="btn btn-primary">Registrar evidencia</button>
+    </form>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-icon rojo">📎</div><div><div class="stat-valor">{{ evidencias|length if evidencias else 0 }}</div><div class="stat-label">Total evidencias</div></div></div>
+    <div class="stat-card"><div class="stat-icon azul">🗂️</div><div><div class="stat-valor">{{ casos_con_evidencia }}</div><div class="stat-label">Casos con evidencia</div></div></div>
+  </div>
+
+  {% if evidencias %}
+  <div class="ev-grid">
+    {% for e in evidencias %}
+    <div class="ev-card">
+      <div class="ev-icon">📄</div>
+      <div class="ev-tipo">{{ e.tipo_evidencia or 'Documento' }}</div>
+      <div class="ev-archivo">{{ e.ruta_archivo }}</div>
+      <div style="display:flex;gap:6px;margin-top:14px;flex-wrap:wrap">
+        <a href="{{ e.ruta_archivo }}" target="_blank" class="btn btn-outline btn-sm">Abrir</a>
+        <a href="/caso/{{ e.caso_id }}" class="btn btn-ghost btn-sm">Caso #{{ e.caso_id }}</a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="card">
+    <div class="empty-state">
+      <div class="icono">📂</div>
+      <h4>Sin evidencias registradas</h4>
+      <p>Sube la primera evidencia para comenzar la biblioteca.</p>
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

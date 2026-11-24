@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Seguimientos - Centinela Digital{% endblock %}
+{% block extra_css %}
+<style>
+.feed-item{display:flex;gap:16px;padding:18px 20px;background:#fff;border:1px solid var(--borde);border-radius:12px;margin-bottom:12px;transition:.2s;align-items:flex-start}
+.feed-item:hover{box-shadow:var(--sombra-md);border-color:#fca5a5}
+.feed-dot{width:12px;height:12px;border-radius:50%;background:var(--rojo);margin-top:6px;flex-shrink:0;box-shadow:0 0 0 4px #fdf2f2}
+.feed-body{flex:1}
+.feed-body h4{font-size:14.5px;margin-bottom:6px;font-weight:600;line-height:1.4}
+.feed-meta{font-size:12px;color:var(--texto-mut);display:flex;gap:14px;flex-wrap:wrap}
+</style>
+{% endblock %}
+{% block content %}
+<div class="container fade-in">
+  <div class="page-header">
+    <h2>Seguimiento en tiempo real</h2>
+    <p>Línea de tiempo global con todos los avances registrados</p>
+  </div>
+
+  {% if seguimientos %}
+    {% for s in seguimientos %}
+    <div class="feed-item">
+      <div class="feed-dot"></div>
+      <div class="feed-body">
+        <h4>{{ s.comentario_avance }}</h4>
+        <div class="feed-meta">
+          <span>🗂️ Caso #{{ s.caso_id }}</span>
+          <span>👤 {{ s.responsable }}</span>
+          <span>📅 {{ s.fecha_avance.strftime('%d/%m/%Y %H:%M') if s.fecha_avance else '—' }}</span>
+        </div>
+      </div>
+      <a href="/caso/{{ s.caso_id }}" class="btn btn-outline btn-sm">Ver caso</a>
+    </div>
+    {% endfor %}
+  {% else %}
+  <div class="card">
+    <div class="empty-state">
+      <div class="icono">📈</div>
+      <h4>Sin avances registrados</h4>
+      <p>Los comentarios de seguimiento aparecerán aquí conforme se registren en cada caso.</p>
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

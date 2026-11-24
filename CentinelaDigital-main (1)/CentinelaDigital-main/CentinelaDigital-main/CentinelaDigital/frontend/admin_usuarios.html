@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Usuarios - Centinela Digital{% endblock %}
+{% block nav_usuarios %}activo{% endblock %}
+{% block content %}
+<div class="container fade-in">
+  <div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:12px">
+    <div>
+      <h2>Gestión de usuarios</h2>
+      <p>Administración de cuentas registradas en el sistema</p>
+    </div>
+    <a href="/registro" class="btn btn-primary">➕ Nuevo usuario</a>
+  </div>
+
+  <div class="card">
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>ID</th><th>Nombre</th><th>Correo</th><th>Acciones</th></tr></thead>
+        <tbody>
+          {% if usuarios %}
+            {% for u in usuarios %}
+            <tr>
+              <td><strong>#{{ u.id }}</strong></td>
+              <td style="display:flex;align-items:center;gap:10px">
+                <div class="avatar" style="width:32px;height:32px;font-size:12px">{{ u.nombre[0]|upper }}</div>
+                {{ u.nombre }}
+              </td>
+              <td>{{ u.correo }}</td>
+              <td>
+                <a href="/usuarios/{{ u.id }}/eliminar" class="btn btn-danger btn-sm" onclick="return confirm('¿Eliminar este usuario?')">Eliminar</a>
+              </td>
+            </tr>
+            {% endfor %}
+          {% else %}
+            <tr><td colspan="4" style="text-align:center;padding:40px;color:var(--texto-mut)">Sin usuarios registrados.</td></tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
